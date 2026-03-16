@@ -1,34 +1,34 @@
 # gfxr-idcard
 
-Western temalı kimlik kartı sistemi. Oyuncu bilgilerini parşömen tarzı bir ID card üzerinde gösterir.
+Western-themed identification card system. Displays player information on a parchment-style ID card with mugshot support.
 
-## Özellikler
+## Features
 
-- Western/1899 temalı tasarım
-- Otomatik mugshot çekimi (karakter ilk yüklendiğinde)
-- Tüm framework'lerle uyumlu (VORP, RSG, RedEM)
-- Configurable theme ve locale desteği
-- Sheriff/Police mugshot çekme yetkisi
+- Western/1899-era themed design
+- Automatic mugshot capture on first character load
+- Compatible with all frameworks (VORP, RSG, RedEM)
+- Configurable theme and locale support
+- Sheriff/Police mugshot authorization
 
-## Gereksinimler
+## Dependencies
 
-| Dependency | Açıklama |
-|------------|----------|
-| `gfx-bridge` | Framework abstraction |
-| `screenshot-basic` | Mugshot çekimi için |
+| Dependency | Description |
+|------------|-------------|
+| `gfxr-bridge` | Framework abstraction layer |
+| `screenshot-basic` | Required for mugshot capture |
 
-## Kurulum
+## Installation
 
-1. **Resource'u ekle:**
+1. **Add to server.cfg:**
    ```
-   ensure gfx-bridge
+   ensure gfxr-bridge
    ensure screenshot-basic
    ensure gfxr-idcard
    ```
 
-2. **SQL'i çalıştır:**
+2. **Run the SQL migration:**
    ```sql
-   -- sql/install.sql dosyasını import et
+   -- Import sql/install.sql
    CREATE TABLE IF NOT EXISTS `gfxr_mugshots` (
        `id` INT(11) NOT NULL AUTO_INCREMENT,
        `identifier` VARCHAR(255) NOT NULL,
@@ -40,11 +40,11 @@ Western temalı kimlik kartı sistemi. Oyuncu bilgilerini parşömen tarzı bir 
    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
    ```
 
-3. **Config'i ayarla:**
-   - `config/client_config.lua` - Tema, mugshot ayarları
-   - `config/locale.lua` - Dil çevirileri
+3. **Configure:**
+   - `config/client_config.lua` - Theme, mugshot settings
+   - `config/locale.lua` - Language translations
 
-## Config
+## Configuration
 
 ### client_config.lua
 
@@ -53,17 +53,17 @@ Config = {}
 
 Config.Debug = false
 
--- Tema renkleri
+-- Theme colors
 Config.Theme = {
-    Primary = "#c21414",        -- Ana renk (mühür, ID no)
+    Primary = "#c21414",        -- Main color (seal, ID number)
     PrimaryContent = "#ffffff",
-    Secondary = "#DAA520",      -- İkincil renk
-    Background = "#F4E4C1",     -- Parşömen arka plan
-    Ink = "#1a1613",            -- Yazı rengi
+    Secondary = "#DAA520",      -- Secondary color (gold)
+    Background = "#F4E4C1",     -- Parchment background
+    Ink = "#1a1613",            -- Text color
     Parchment = "#F4E4C1"
 }
 
--- ID Card bilgileri
+-- ID Card information
 Config.IdCard = {
     Territory = "New Hanover",
     EstablishedYear = "1899",
@@ -72,11 +72,11 @@ Config.IdCard = {
     Signature = "Sheriff Curtis Malloy"
 }
 
--- Mugshot ayarları
+-- Mugshot settings
 Config.Mugshot = {
-    UploadURL = "https://your-server.com/upload",  -- Resim upload endpoint
-    FieldName = "file",                             -- Form field adı
-    AutoCapture = true,                             -- Otomatik çekim
+    UploadURL = "https://your-server.com/upload",  -- Image upload endpoint
+    FieldName = "file",                             -- Form field name
+    AutoCapture = true,                             -- Auto-capture on load
     Camera = {
         Fov = 30.0,
         Distance = 0.6,
@@ -84,83 +84,56 @@ Config.Mugshot = {
     }
 }
 
--- Komutlar
-Config.Command = "idcard"           -- ID kartı aç
-Config.MugshotCommand = "takemugshot"  -- Mugshot çek
-Config.Keybind = "F5"               -- Tuş ataması (false = devre dışı)
+-- Commands
+Config.Command = "idcard"              -- Open ID card
+Config.MugshotCommand = "takemugshot"  -- Take mugshot
+Config.Keybind = "F5"                  -- Keybind (false = disabled)
 
--- Mugshot çekme yetkisi olan job'lar (boş = herkes)
+-- Jobs allowed to take mugshots (empty = everyone)
 Config.MugshotJobs = {
     "sheriff",
     "police",
     "lawman"
 }
 
-Config.Locale = "en"  -- "en" veya "tr"
+Config.Locale = "en"  -- "en" or "tr"
 ```
 
-### locale.lua
+## Commands
 
-```lua
-Locale = {}
-
-Locale.en = {
-    territory = "Territory of",
-    identification_document = "IDENTIFICATION DOCUMENT",
-    official_registry = "Official Registry of the",
-    legal_name = "Legal Full Name",
-    date_of_birth = "Date of Birth",
-    occupation = "Current Occupation",
-    town_county = "Town / County",
-    official_signature = "Official Signature",
-    approved_by = "APPROVED BY",
-    judicial_court = "JUDICIAL COURT",
-    subject_ref = "SUBJECT REF",
-    id_no = "ID NO."
-}
-
-Locale.tr = {
-    territory = "Bolgesi",
-    identification_document = "KIMLIK BELGESI",
-    -- ...
-}
-```
-
-## Komutlar
-
-| Komut | Açıklama |
-|-------|----------|
-| `/idcard` | ID kartını aç/kapat |
-| `/takemugshot` | En yakın oyuncunun mugshot'ını çek |
-| `/takemugshot [id]` | Belirtilen ID'li oyuncunun mugshot'ını çek |
-| `/selfmugshot` | Kendi mugshot'ını çek |
+| Command | Description |
+|---------|-------------|
+| `/idcard` | Toggle ID card display |
+| `/takemugshot` | Take mugshot of nearest player |
+| `/takemugshot [id]` | Take mugshot of player with specified ID |
+| `/selfmugshot` | Take your own mugshot |
 
 ## Exports (Client)
 
 ```lua
--- ID kartını aç
+-- Open the ID card
 exports['gfxr-idcard']:OpenIdCard()
 
--- ID kartını kapat
+-- Close the ID card
 exports['gfxr-idcard']:CloseIdCard()
 
--- ID kartı açık mı?
+-- Check if ID card is open
 local isOpen = exports['gfxr-idcard']:IsIdCardOpen()
 
--- Mugshot çek (target server ID)
+-- Take mugshot of a target player
 exports['gfxr-idcard']:TakeMugshot(targetServerId)
 
--- En yakın oyuncunun mugshot'ını çek
+-- Take mugshot of nearest player
 exports['gfxr-idcard']:TakeMugshotNearest()
 
--- Kendi mugshot'ını çek
+-- Take your own mugshot
 exports['gfxr-idcard']:TakeSelfMugshot()
 ```
 
 ## Exports (Server)
 
 ```lua
--- Oyuncunun mugshot URL'ini al
+-- Get a player's mugshot URL
 local mugshotUrl = exports['gfxr-idcard']:GetMugshot(source)
 ```
 
@@ -169,29 +142,29 @@ local mugshotUrl = exports['gfxr-idcard']:GetMugshot(source)
 ### Client
 
 ```lua
--- ID kartı verileri alındığında
+-- Fired when player data is received for the ID card
 RegisterNetEvent('gfxr-idcard:receivePlayerData', function(data)
     -- data.firstName, data.lastName, data.mugshot, etc.
 end)
 
--- Otomatik mugshot çekimi tetiklendiğinde
+-- Fired when auto mugshot capture is triggered
 RegisterNetEvent('gfxr-idcard:autoCaptureMugshot', function()
-    -- Mugshot yok, otomatik çekilecek
+    -- No mugshot found, auto-capture will begin
 end)
 ```
 
 ### Server
 
 ```lua
--- Mugshot kaydetme
+-- Fired when a mugshot is saved
 RegisterNetEvent('gfxr-idcard:saveMugshot', function(targetServerId, mugshotUrl)
-    -- Mugshot kaydedildi
+    -- Mugshot has been saved to database
 end)
 ```
 
 ## Mugshot Upload Server
 
-Upload endpoint'in döndürmesi gereken format:
+Your upload endpoint must return the following format:
 
 ```json
 {
@@ -199,7 +172,7 @@ Upload endpoint'in döndürmesi gereken format:
 }
 ```
 
-### Örnek PHP Endpoint
+### Example PHP Endpoint
 
 ```php
 <?php
@@ -219,19 +192,19 @@ if (move_uploaded_file($_FILES['file']['tmp_name'], $targetPath)) {
 }
 ```
 
-## Veri Kaynakları
+## Data Sources
 
-| UI Alanı | Bridge Export | Framework Kaynağı |
-|----------|---------------|-------------------|
-| Ad Soyad | `GetPlayer()` | `firstname`, `lastname` |
-| Doğum Tarihi | `GetPlayer()` | `dateofbirth` / `birthdate` |
-| Meslek | `GetPlayerJob()` | `job.label` |
-| Mugshot | `ExecuteSql()` | `gfxr_mugshots` tablosu |
-| ID No | `GetIdentifier()` | Hash'lenerek üretilir |
+| UI Field | Bridge Export | Framework Source |
+|----------|--------------|-----------------|
+| Full Name | `GetPlayer()` | `firstname`, `lastname` |
+| Date of Birth | `GetPlayer()` | `dateofbirth` / `birthdate` |
+| Occupation | `GetPlayerJob()` | `job.label` |
+| Mugshot | `ExecuteSql()` | `gfxr_mugshots` table |
+| ID Number | `GetIdentifier()` | Generated via hash |
 
-## Notlar
+## Notes
 
-- Mugshot otomatik çekimi karakter yüklendiğinde tetiklenir
-- Mugshot yoksa sessizce çekilir, kullanıcıya bildirim gösterilmez
-- ID numarası karakter identifier'ından hash'lenerek üretilir (her seferinde aynı kalır)
-- Sheriff/Police job'undaki oyuncular başka oyuncuların mugshot'larını çekebilir
+- Auto mugshot capture triggers when a character loads for the first time
+- If no mugshot exists, it is captured silently without notifying the player
+- The ID number is generated by hashing the character identifier (stays consistent)
+- Players with Sheriff/Police jobs can take mugshots of other players
