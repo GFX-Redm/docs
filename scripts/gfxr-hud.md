@@ -1,6 +1,6 @@
 # gfxr-hud
 
-Framework-agnostic RedM HUD with player vitals, metabolism, contextual horse widget, money, player info, clock/weather, voice indicator, minimap controller, and a fully in-game NUI settings menu with per-player SQL persistence.
+Framework-agnostic RedM HUD with player vitals, metabolism, contextual horse widget, money, player info, clock/weather, voice indicator, minimap controller, and a fully in-game NUI settings menu. Settings are persisted entirely in the browser's localStorage — no database required.
 
 ## Features
 
@@ -14,9 +14,15 @@ Framework-agnostic RedM HUD with player vitals, metabolism, contextual horse wid
 - Minimap controller: circle, square, or off shape; zoom level; fog-of-war toggle
 - In-game NUI settings menu opened via a rebindable keybind or console command — supports drag-to-reposition, scale slider, enable/disable per element, theme picker with live preview, and minimap shape selector
 - Three UI themes: Authentic (Western ornate), Minimal (clean), Ornate (detailed)
-- Per-player settings persisted to SQL; first-time players receive seeded defaults
+- Settings persisted in the NUI's CEF localStorage — survive game restarts, no SQL required
 - Event-driven money and needs updates via the bridge `OnMoneyChange` / `OnNeedsChange` — no server polling for either (see Performance below)
 - Delta-only NUI pushes: only changed values are sent to the React layer, keeping idle resmon near zero
+
+## Architecture
+
+gfxr-hud is **fully client-side**. There are no server scripts and no database. The `fxmanifest.lua` declares only `client_scripts`; the `server_scripts` block and `sql/` directory have been removed entirely.
+
+Settings (theme, element positions/scale/enabled state, minimap shape/zoom) are stored in the NUI's CEF localStorage under the single key `gfxr-hud:settings`. Because CEF localStorage is machine-wide, settings are shared by all characters on the same PC and persist across game restarts and resource restarts without any server interaction.
 
 ## Dependencies
 
@@ -26,24 +32,20 @@ Framework-agnostic RedM HUD with player vitals, metabolism, contextual horse wid
 
 ## Installation
 
-1. **Import the SQL schema:**
-   ```sql
-   -- Run once against your server database
-   source resources/[gfx]/gfxr-hud/sql/gfxr_hud.sql
-   ```
-
-2. **Add to server.cfg** (must come after `gfxr-bridge`):
+1. **Add to server.cfg** (must come after `gfxr-bridge`):
    ```
    ensure gfxr-bridge
    ensure gfxr-hud
    ```
 
-3. **NUI:** the `web/build/` folder is pre-built. If you need to rebuild after editing `web/src/`:
+2. **NUI:** the `web/build/` folder is pre-built. If you need to rebuild after editing `web/src/`:
    ```bash
    cd resources/[gfx]/gfxr-hud/web
    npm install
    npm run build
    ```
+
+No SQL import step is required.
 
 ## Configuration
 
@@ -51,12 +53,12 @@ Framework-agnostic RedM HUD with player vitals, metabolism, contextual horse wid
 
 | Key | Default | Description |
 |-----|---------|-------------|
-| `Config.MENU_KEYBIND` | `"F7"` | Default key for `RegisterKeyMapping`; players can rebind in GTA settings |
+| `Config.MENU_KEYBIND` | `"F7"` | Default key for `RegisterKeyMapping`; players can rebind in game settings |
 | `Config.MENU_COMMAND` | `"hudmenu"` | Console command that also opens the settings menu |
 | `Config.UPDATE_INTERVAL` | `1000` | Milliseconds between local-native sampling loops (cores, horse, clock, weather) |
 | `Config.FAST_UPDATE_INTERVAL` | `250` | Milliseconds between voice indicator samples |
 | `Config.DELTA_EPSILON` | `1` | Minimum integer-percent change before a vital or need value is re-pushed to the NUI |
-| `Config.DEFAULT_THEME` | `1` | Starting theme: `1` = Authentic, `2` = Minimal, `3` = Ornate (overridden by SQL on load) |
+| `Config.DEFAULT_THEME` | `1` | Starting theme: `1` = Authentic, `2` = Minimal, `3` = Ornate (used until localStorage settings load in the NUI) |
 | `Config.SHOW_ON_LOAD` | `true` | Show the HUD automatically once the player is loaded |
 | `Config.HIDE_IN_CUTSCENE` | `true` | Auto-hide during scripted/networked cutscenes |
 | `Config.HIDE_IN_PAUSE_MENU` | `true` | Auto-hide when the pause menu is open |
@@ -71,7 +73,7 @@ Framework-agnostic RedM HUD with player vitals, metabolism, contextual horse wid
 | `Config.MINIMAP.SHAPE` | `"circle"` | Default minimap shape: `"circle"`, `"square"`, or `"off"` |
 | `Config.MINIMAP.ZOOM` | `1080` | Default radar zoom level |
 | `Config.MINIMAP.HIDE_FOW` | `false` | Reveal fog of war on the minimap |
-| `Config.ELEMENTS` | *(see below)* | Per-element defaults; overridden by SQL-loaded settings |
+| `Config.ELEMENTS` | *(see below)* | Per-element defaults; overridden by the NUI's localStorage-loaded settings |
 | `Config.Notify` | `nil` | Optional function override for notifications; if nil, the bridge `Notify` is used |
 
 #### Config.ELEMENTS
@@ -96,17 +98,20 @@ Each entry has the shape `{ ENABLED, X, Y, SCALE }` where `X`/`Y` are viewport-n
 
 All elements default to `ENABLED = true` and `SCALE = 1.0`.
 
-### config/server_config.lua
+## Settings Persistence
 
-| Key | Default | Description |
-|-----|---------|-------------|
-| `Config.AUTOSAVE_DEBOUNCE` | `1500` | Milliseconds to wait after the last settings change before writing to SQL (prevents write spam while dragging elements) |
-| `Config.DEFAULT_SETTINGS` | *(mirrors client defaults)* | Seed row written to SQL for first-time players; includes `theme`, `elements`, and `minimap` |
-| `Config.VALID_ELEMENTS` | *(list of 13 ids)* | Whitelist of accepted element keys in `saveSettings` validation |
-| `Config.SCALE_MIN` | `0.5` | Minimum accepted element scale value |
-| `Config.SCALE_MAX` | `2.0` | Maximum accepted element scale value |
-| `Config.VALID_THEMES` | `{[1]=true,[2]=true,[3]=true}` | Accepted theme ids |
-| `Config.VALID_SHAPES` | `{circle=true,square=true,off=true}` | Accepted minimap shape strings |
+Settings are saved entirely inside the NUI's CEF localStorage under the key `gfxr-hud:settings`. This includes:
+
+- Active theme (1 = Authentic, 2 = Minimal, 3 = Ornate)
+- Per-element position (X/Y), scale, and enabled state
+- Minimap shape and zoom level
+
+**Save / Reset behaviour:**
+
+- Clicking **Save** in the settings menu writes the current layout to localStorage immediately. The minimap shape/zoom is also applied to the in-game radar via a `setMinimap` NUI callback.
+- Clicking **Reset** clears the stored settings and restores the `Config.*` defaults defined in `config/client_config.lua`.
+
+**Machine-wide scope:** because CEF localStorage is per-machine (not per-character or per-account), all characters played on the same PC share the same HUD layout. There is no per-character or per-server storage.
 
 ## Performance
 
@@ -143,7 +148,7 @@ local visible = exports['gfxr-hud']:IsHudVisible()
 
 ### SetMinimapShape
 
-Change the minimap shape immediately (does not persist; use the settings menu to persist).
+Change the minimap shape immediately (applies the radar native; does not persist — use the settings menu to persist to localStorage).
 
 ```lua
 exports['gfxr-hud']:SetMinimapShape(shape)
@@ -173,19 +178,6 @@ Forces the HUD to re-push its current config and locale to the NUI and clear the
 
 ```lua
 TriggerClientEvent('gfxr-hud:forceRefresh', source)
-```
-
-### gfxr-hud:saveSettings (server, net event)
-
-Sent by the client when the player saves settings from the menu. The server validates, sanitizes, and debounces the write to SQL. Other resources should not fire this event directly.
-
-### gfxr-hud:getSettings (server callback)
-
-Registered via `exports['gfxr-bridge']:RegisterCallback`. Called by the client on player load to fetch saved settings. Returns `{ theme, elements, minimap }` from SQL, or seeds and returns defaults for first-time players.
-
-```lua
--- Client usage (internal):
-local settings = exports['gfxr-bridge']:TriggerCallback('gfxr-hud:getSettings')
 ```
 
 ## Locale
@@ -233,17 +225,3 @@ Three languages are included. Set `Locale = 'en'` (or `'tr'` / `'fr'`) at the to
 | `notify_saved` | HUD settings saved | HUD ayarlari kaydedildi | Parametres HUD enregistres |
 | `notify_save_failed` | Could not save HUD settings | HUD ayarlari kaydedilemedi | Impossible d'enregistrer les parametres HUD |
 | `notify_reset` | HUD settings reset to defaults | HUD ayarlari varsayilana sifirlandi | Parametres HUD reinitialises |
-
-## SQL Schema
-
-Table: `gfxr_hud_settings`
-
-| Column | Type | Description |
-|--------|------|-------------|
-| `identifier` | `VARCHAR(80)` PRIMARY KEY | Player identifier (citizenid / charid / license) |
-| `theme` | `INT` | Active theme id (1, 2, or 3) |
-| `elements` | `LONGTEXT` | JSON object mapping element id to `{ enabled, x, y, scale }` |
-| `minimap` | `LONGTEXT` | JSON object: `{ enabled, shape, zoom }` |
-| `updated_at` | `TIMESTAMP` | Auto-updated on every write |
-
-One row per player. First login inserts a seed row from `Config.DEFAULT_SETTINGS`. The `elements` and `minimap` columns are decoded by the server from JSON on read and re-encoded on write.
