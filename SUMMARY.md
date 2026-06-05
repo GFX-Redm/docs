@@ -18,3 +18,4 @@
 * [gfxr-spawnselector](scripts/gfxr-spawnselector.md) - Spawn point selection UI
 * [gfxr-leaderboard](scripts/gfxr-leaderboard.md) - Player statistics leaderboard
 * [gfxr-inventory](scripts/gfxr-inventory.md) - Drag-and-drop inventory UI
+* [gfxr-hud](scripts/gfxr-hud.md) - Framework-agnostic RedM HUD with vitals, metabolism, horse widget & settings
