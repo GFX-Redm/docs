@@ -12,7 +12,7 @@ Framework-agnostic RedM HUD with player vitals, metabolism, contextual horse wid
 - Clock and weather widget: in-game time and a weather icon mapped from the settled weather hash
 - Voice indicator: detects pma-voice, yaca, saltychat, or mumble by priority; shows range (whisper/normal/shout) and talking state
 - Minimap controller: circle, square, or off shape; zoom level; fog-of-war toggle
-- In-game NUI settings menu opened via a rebindable keybind or console command — supports drag-to-reposition, scale slider, enable/disable per element, theme picker with live preview, and minimap shape selector
+- In-game NUI settings menu opened via F7 (raw key, polled directly on RedM) or the `hudmenu` console command — supports drag-to-reposition, scale slider, enable/disable per element, theme picker with live preview, and minimap shape selector
 - Three UI themes: Authentic (Western ornate), Minimal (clean), Ornate (detailed)
 - Settings persisted in the NUI's CEF localStorage — survive game restarts, no SQL required
 - Event-driven money and needs updates via the bridge `OnMoneyChange` / `OnNeedsChange` — no server polling for either (see Performance below)
@@ -53,8 +53,10 @@ No SQL import step is required.
 
 | Key | Default | Description |
 |-----|---------|-------------|
-| `Config.MENU_KEYBIND` | `"F7"` | Default key for `RegisterKeyMapping`; players can rebind in game settings |
-| `Config.MENU_COMMAND` | `"hudmenu"` | Console command that also opens the settings menu |
+| `Config.MENU_COMMAND` | `"hudmenu"` | Console command that opens the settings menu; also usable as a bindable command |
+| `Config.MENU_KEYBIND` | `"F7"` | Default key passed to `RegisterKeyMapping` (FiveM key-binding UI only; ignored on RedM) |
+| `Config.MENU_KEY` | `0x76` | **RedM — raw Windows virtual-key code polled via `IsRawKeyJustPressed`.** This is the key that actually opens the menu on rdr3. Default `0x76` = F7. Common codes: F1=0x70, F2=0x71 … F7=0x76 … F12=0x7B; digits 0–9 = 0x30–0x39; A–Z = 0x41–0x5A. Set to `false` to disable raw-key polling entirely. |
+| `Config.MENU_CONTROL` | `false` | Optional game-control-hash fallback, checked only when raw-key polling is unavailable. Disabled by default. The old default (0xE8342FF2 = INPUT\_MULTIPLAYER\_INFO / Left Alt) clashed with targeting — that was a bug, now corrected. |
 | `Config.UPDATE_INTERVAL` | `1000` | Milliseconds between local-native sampling loops (cores, horse, clock, weather) |
 | `Config.FAST_UPDATE_INTERVAL` | `250` | Milliseconds between voice indicator samples |
 | `Config.DELTA_EPSILON` | `1` | Minimum integer-percent change before a vital or need value is re-pushed to the NUI |
@@ -62,7 +64,16 @@ No SQL import step is required.
 | `Config.SHOW_ON_LOAD` | `true` | Show the HUD automatically once the player is loaded |
 | `Config.HIDE_IN_CUTSCENE` | `true` | Auto-hide during scripted/networked cutscenes |
 | `Config.HIDE_IN_PAUSE_MENU` | `true` | Auto-hide when the pause menu is open |
+| `Config.HIDE_ON_FULLMAP` | `true` | Auto-hide the entire HUD when the full map (M) is open |
 | `Config.NEEDS_ENABLED` | `true` | Master toggle for the hunger/thirst/stress widgets; disable on servers without a metabolism resource |
+| `Config.HIDE_NATIVE_CORES` | `true` | Hide RDR2's built-in attribute cores so gfxr-hud draws its own |
+| `Config.TEMPERATURE_ENABLED` | `true` | Show the ambient temperature badge |
+| `Config.TEMPERATURE_UNIT` | `"C"` | Default temperature unit shown on the badge: `"C"` (Celsius) or `"F"` (Fahrenheit); players can switch in settings |
+| `Config.POPULATION_ENABLED` | `true` | Show the online player count (online/max), polled from the server |
+| `Config.POPULATION_INTERVAL` | `30000` | Milliseconds between server player-count polls |
+| `Config.VISIBILITY.CORES` | `"visible"` | Visibility mode for player bars (health/stamina/needs): `"visible"`, `"hidden"`, or `"onchange"` |
+| `Config.VISIBILITY.MONEY` | `"visible"` | Visibility mode for the money widget |
+| `Config.VISIBILITY.VOICE` | `"visible"` | Visibility mode for the voice indicator |
 | `Config.HORSE_WIDGET.ENABLED` | `true` | Show the horse widget |
 | `Config.HORSE_WIDGET.AUTO_HIDE` | `true` | Automatically hide the widget when the player is not mounted |
 | `Config.VOICE.ENABLED` | `true` | Show the voice indicator widget |
@@ -73,6 +84,10 @@ No SQL import step is required.
 | `Config.MINIMAP.SHAPE` | `"circle"` | Default minimap shape: `"circle"`, `"square"`, or `"off"` |
 | `Config.MINIMAP.ZOOM` | `1080` | Default radar zoom level |
 | `Config.MINIMAP.HIDE_FOW` | `false` | Reveal fog of war on the minimap |
+| `Config.MINIMAP.BORDER_STYLE` | `"compass"` | Decorative minimap frame style (NUI only): `"compass"`, `"minimal"`, `"double"`, `"rope"`, `"studded"`, `"ornate"` |
+| `Config.MINIMAP.LABEL_STYLE` | `"pill"` | Location label style shown below the minimap: `"pill"`, `"banner"`, `"ribbon"`, `"plate"`, `"minimal"` |
+| `Config.LOCATION.ENABLED` | `true` | Show the township/region label under the minimap |
+| `Config.LOCATION.FALLBACK` | `"Frontier"` | Label shown when no known zone matches (deep wilderness) |
 | `Config.ELEMENTS` | *(see below)* | Per-element defaults; overridden by the NUI's localStorage-loaded settings |
 | `Config.Notify` | `nil` | Optional function override for notifications; if nil, the bridge `Notify` is used |
 
@@ -80,23 +95,25 @@ No SQL import step is required.
 
 Each entry has the shape `{ ENABLED, X, Y, SCALE }` where `X`/`Y` are viewport-normalized (0–1) and `SCALE` is a multiplier.
 
-| Element key | Default X | Default Y | Notes |
-|-------------|-----------|-----------|-------|
-| `health` | `0.04` | `0.86` | |
-| `stamina` | `0.09` | `0.90` | |
-| `deadeye` | `0.14` | `0.86` | |
-| `hunger` | `0.04` | `0.78` | Hidden when `NEEDS_ENABLED = false` |
-| `thirst` | `0.04` | `0.74` | Hidden when `NEEDS_ENABLED = false` |
-| `stress` | `0.04` | `0.70` | Hidden when `NEEDS_ENABLED = false`; always 0 on VORP |
-| `horse` | `0.04` | `0.58` | Managed by `HORSE_WIDGET` toggle |
-| `money` | `0.86` | `0.04` | |
-| `info` | `0.86` | `0.12` | |
-| `clock` | `0.47` | `0.03` | |
-| `weather` | `0.53` | `0.03` | |
-| `voice` | `0.47` | `0.92` | Managed by `VOICE` toggle |
-| `minimap` | `0.02` | `0.74` | Managed by `MINIMAP` toggle |
-
-All elements default to `ENABLED = true` and `SCALE = 1.0`.
+| Element key | Default X | Default Y | Default SCALE | Notes |
+|-------------|-----------|-----------|---------------|-------|
+| `health` | `0.04` | `0.86` | `1.0` | |
+| `stamina` | `0.09` | `0.90` | `1.0` | |
+| `deadeye` | `0.14` | `0.86` | `1.0` | Disabled by default (`ENABLED = false`) |
+| `hunger` | `0.04` | `0.78` | `1.0` | Hidden when `NEEDS_ENABLED = false` |
+| `thirst` | `0.04` | `0.74` | `1.0` | Hidden when `NEEDS_ENABLED = false` |
+| `stress` | `0.04` | `0.70` | `1.0` | Hidden when `NEEDS_ENABLED = false`; always 0 on VORP |
+| `temp` | `0.50` | `0.965` | `1.0` | Ambient temperature badge; hidden when `TEMPERATURE_ENABLED = false` |
+| `horse` | `0.04` | `0.58` | `1.0` | Managed by `HORSE_WIDGET` toggle |
+| `money` | `0.9846` | `0.1778` | `1.0` | |
+| `info` | `0.9155` | `0.1226` | `1.0` | |
+| `clock` | `0.50` | `0.0356` | `1.0` | |
+| `weather` | `0.53` | `0.03` | `1.0` | |
+| `voice` | `0.47` | `0.92` | `1.0` | Managed by `VOICE` toggle |
+| `minimap` | `0.0319` | `0.9414` | `1.15` | Managed by `MINIMAP` toggle |
+| `population` | `0.972` | `0.2343` | `1.0` | Managed by `POPULATION_ENABLED` toggle |
+| `player-row` | `0.50` | `0.9659` | `1.0` | Bottom-center player row |
+| `horse-row` | `0.50` | `0.965` | `1.0` | Bottom-center horse row |
 
 ## Settings Persistence
 

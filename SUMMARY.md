@@ -19,3 +19,4 @@
 * [gfxr-leaderboard](scripts/gfxr-leaderboard.md) - Player statistics leaderboard
 * [gfxr-inventory](scripts/gfxr-inventory.md) - Drag-and-drop inventory UI
 * [gfxr-hud](scripts/gfxr-hud.md) - Framework-agnostic RedM HUD with vitals, metabolism, horse widget & settings
+* [gfxr-chat](scripts/gfxr-chat.md) - Frontier-Noir RP chat with proximity channels, 3D emotes, scene markers & moderation
