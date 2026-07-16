@@ -153,9 +153,9 @@ A player is a chat-admin when any one of three checks passes:
 | `Config.MESSAGE_LOG.ENABLED` | `false` | Enable full chat message logging to Discord |
 | `Config.MESSAGE_LOG.WEBHOOK_URL` | `""` | Separate webhook for message log; falls back to `WEBHOOK_URL` if empty |
 | `Config.MESSAGE_LOG.INCLUDE_ID` | `false` | Append the sender's identifier to each logged entry |
-| `Config.MESSAGE_LOG.CHANNELS` | *(see below)* | Per-type toggle; `admin = false` by default |
+| `Config.MESSAGE_LOG.CHANNELS` | *(see below)* | Per-type toggle; `whisper` and `admin` are `false` by default |
 
-**MESSAGE\_LOG channel defaults:** `say`, `me`, `do`, `try`, `whisper`, `shout`, `ooc`, `job`, `scene`, `announce` = `true`; `admin` = `false`.
+**MESSAGE\_LOG channel defaults:** `say`, `me`, `do`, `try`, `shout`, `ooc`, `job`, `scene`, `announce` = `true`; `whisper` = `false` (whispers are usually private RP — enable knowingly); `admin` = `false` (staff-only). The admin **History** search also indexes whispers regardless of this Discord toggle.
 
 ---
 
