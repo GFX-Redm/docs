@@ -1,4 +1,4 @@
-# gfxr-notify
+# RedM Notifications · gfxr-notify
 
 Modern notification, input dialog, and progress bar system for RedM with a Western-themed UI built in React.
 

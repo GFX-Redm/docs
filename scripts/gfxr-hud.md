@@ -1,4 +1,4 @@
-# gfxr-hud
+# RedM Player HUD · gfxr-hud
 
 Framework-agnostic RedM HUD with player vitals, metabolism, contextual horse widget, money, player info, clock/weather, voice indicator, minimap controller, and a fully in-game NUI settings menu. Settings are persisted entirely in the browser's localStorage — no database required.
 

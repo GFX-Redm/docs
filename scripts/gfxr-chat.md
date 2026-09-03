@@ -1,4 +1,4 @@
-# gfxr-chat
+# RedM RP Chat · gfxr-chat
 
 Frontier-Noir-styled RP chat for RedM. A fork of the Cfx stock `chat` resource extended with proximity channels, RP commands, 3D floating text, persistent scene markers, per-player settings, a moderation suite, and an admin panel — all wired to gfxr-bridge. The upstream chat contract (`chat:addMessage`, `chat:addSuggestion`, `registerMessageHook`, etc.) is fully preserved for compatibility with other resources.
 

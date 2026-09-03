@@ -1,4 +1,4 @@
-# gfxr-help
+# RedM Help Menu · gfxr-help
 
 In-game help menu and support ticket system for RedM. Provides an FAQ interface with categorized help topics and a ticket system for player-to-admin communication.
 

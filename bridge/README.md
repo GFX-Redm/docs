@@ -1,4 +1,4 @@
-# gfx-bridge
+# RedM Framework Bridge
 
 ## What is gfx-bridge?
 

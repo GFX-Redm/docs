@@ -1,4 +1,4 @@
-# gfxr-idcard
+# RedM ID Card · gfxr-idcard
 
 Western-themed identification card system. Displays player information on a parchment-style ID card with mugshot support.
 

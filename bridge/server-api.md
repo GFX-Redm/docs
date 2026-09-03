@@ -1,4 +1,4 @@
-# Server API
+# RedM Bridge Server API
 
 All server-side bridge functions are accessed via exports.
 

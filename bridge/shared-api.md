@@ -1,4 +1,4 @@
-# Shared API
+# RedM Bridge Shared API
 
 Shared functions are available on both client and server.
 

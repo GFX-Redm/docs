@@ -1,4 +1,4 @@
-# gfxr-admin
+# RedM Admin Menu · gfxr-admin
 
 Framework-agnostic admin suite for RedM. One React panel with 24 sections covers player management, moderation, reports, a live map, spawning, world control, economy, whitelist, staff chat, resources, logs and security. Access is governed by 122 permission nodes in 17 groups; roles and per-staff overrides live in the database and are edited from the panel itself. Runs on VORP, RSG and RedEM:RP through `gfxr-bridge`.
 

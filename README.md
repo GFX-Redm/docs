@@ -1,4 +1,4 @@
-# GFX RedM Scripts
+# RedM Script Documentation
 
 Welcome to the GFX RedM Scripts documentation. This collection provides high-quality, multi-framework compatible scripts for RedM (Red Dead Redemption 2 multiplayer) servers.
 

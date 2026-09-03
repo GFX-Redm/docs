@@ -1,4 +1,4 @@
-# Client API
+# RedM Bridge Client API
 
 All client-side bridge functions are accessed via exports.
 

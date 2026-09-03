@@ -1,4 +1,4 @@
-# gfxr-leaderboard
+# RedM Leaderboard UI
 
 React-based leaderboard UI for RedM/FiveM. Displays player statistics and rankings with switchable stat categories.
 

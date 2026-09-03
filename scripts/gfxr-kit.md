@@ -1,4 +1,4 @@
-# gfxr-kit
+# RedM Kit System · gfxr-kit
 
 Kit claim system for RedM. Allows server administrators to create item kits that players can claim on cooldown timers, with optional Discord role restrictions.
 

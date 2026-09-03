@@ -1,4 +1,4 @@
-# gfxr-inventory
+# RedM Inventory UI
 
 React-based drag-and-drop inventory UI for RedM/FiveM. Provides a modern inventory management interface with item categorization, weight management, and cross-inventory transfers.
 

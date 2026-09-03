@@ -1,4 +1,4 @@
-# gfxr-spawnselector-redm
+# RedM Spawn Selector UI
 
 Spawn point selection UI for RedM. Allows players to choose their spawn location from predefined map locations or return to their last known position.
 
