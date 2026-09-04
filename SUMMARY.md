@@ -4,20 +4,20 @@
 
 ## Bridge
 
-* [Overview](bridge/README.md)
+* [Framework Bridge](bridge/README.md)
 * [Client API](bridge/client-api.md)
 * [Server API](bridge/server-api.md)
 * [Shared API](bridge/shared-api.md)
 
 ## Scripts
 
-* [gfxr-notify](scripts/gfxr-notify.md) - Notification, progress bar & input dialog system
-* [gfxr-idcard](scripts/gfxr-idcard.md) - Western-themed ID card with mugshot system
-* [gfxr-kit](scripts/gfxr-kit.md) - Kit claim system with cooldowns
-* [gfxr-help](scripts/gfxr-help.md) - Help menu & support ticket system
-* [gfxr-spawnselector](scripts/gfxr-spawnselector.md) - Spawn point selection UI
-* [gfxr-leaderboard](scripts/gfxr-leaderboard.md) - Player statistics leaderboard
-* [gfxr-inventory](scripts/gfxr-inventory.md) - Drag-and-drop inventory UI
-* [gfxr-hud](scripts/gfxr-hud.md) - Framework-agnostic RedM HUD with vitals, metabolism, horse widget & settings
-* [gfxr-chat](scripts/gfxr-chat.md) - Frontier-Noir RP chat with proximity channels, 3D emotes, scene markers & moderation
-* [gfxr-admin](scripts/gfxr-admin.md) - Staff panel with 122 permission nodes, reports, live map, moderation & audit log
+* [Notifications](scripts/gfxr-notify.md) - gfxr-notify — Notification, progress bar & input dialog system
+* [ID Card](scripts/gfxr-idcard.md) - gfxr-idcard — Western-themed ID card with mugshot system
+* [Kit System](scripts/gfxr-kit.md) - gfxr-kit — Kit claim system with cooldowns
+* [Help Menu](scripts/gfxr-help.md) - gfxr-help — Help menu & support ticket system
+* [Spawn Selector](scripts/gfxr-spawnselector.md) - gfxr-spawnselector — Spawn point selection UI
+* [Leaderboard](scripts/gfxr-leaderboard.md) - gfxr-leaderboard — Player statistics leaderboard
+* [Inventory](scripts/gfxr-inventory.md) - gfxr-inventory — Drag-and-drop inventory UI
+* [Player HUD](scripts/gfxr-hud.md) - gfxr-hud — Framework-agnostic RedM HUD with vitals, metabolism, horse widget & settings
+* [RP Chat](scripts/gfxr-chat.md) - gfxr-chat — Frontier-Noir RP chat with proximity channels, 3D emotes, scene markers & moderation
+* [Admin Menu](scripts/gfxr-admin.md) - gfxr-admin — Staff panel with 122 permission nodes, reports, live map, moderation & audit log
