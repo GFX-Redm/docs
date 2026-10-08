@@ -56,7 +56,7 @@ Returns number.
 ```lua
 local bank = exports['gfxr-bridge']:GetBank(source)
 ```
-Returns the player's bank balance as a number. **RSG** (`PlayerData.money.bank`) and **RedEM:RP** (`bankmoney`) expose a native bank balance. **VORP** has no standardized core bank balance — banking is a separate optional resource not tied to the character object — so VORP returns `0`. Scripts needing VORP banking must query that resource directly.
+Returns the player's bank balance as a number. **RSG** (`PlayerData.money.bank`) and **RedEM:RP** (`bankmoney`) expose a native bank balance. **VORP** has no standardized core bank balance - banking is a separate optional resource not tied to the character object - so VORP returns `0`. Scripts needing VORP banking must query that resource directly.
 
 ## Inventory Functions
 
@@ -153,6 +153,6 @@ Per-framework sourcing (so you know what to expect):
 |---|---|---|---|
 | **RSG** | `PlayerData.metadata.hunger / thirst / stress` | 0–100 | Direct, reliable. Stress supported. |
 | **VORP** | character `status` JSON written by **`vorp_metabolism`** (keys `Hunger`/`Thirst`/`Metabolism`) | 0–1000 → normalized to 0–100 | Requires `vorp_metabolism` (or a resource using the same `setStatus` channel). No stress concept → `stress = 0`. Returns zeros if metabolism never ran for the character. |
-| **RedEM:RP** | best-effort read of `player.status.*` / `player.*` | varies | `redemrp_status` exposes no documented server-side getter; only an `AddHungerThirst` mutation event. May return zeros — verify on your build, or extend this branch if your status resource exposes a getter. |
+| **RedEM:RP** | best-effort read of `player.status.*` / `player.*` | varies | `redemrp_status` exposes no documented server-side getter; only an `AddHungerThirst` mutation event. May return zeros - verify on your build, or extend this branch if your status resource exposes a getter. |
 
 > Sources cached under `.claude/refs/cache/` (`vorp-metabolism`, `rsg-playerdata`, `redem-status`).

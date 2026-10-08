@@ -1,13 +1,13 @@
 # RedM RP Chat · gfxr-chat
 
-Frontier-Noir-styled RP chat for RedM. A fork of the Cfx stock `chat` resource extended with proximity channels, RP commands, 3D floating text, persistent scene markers, per-player settings, a moderation suite, and an admin panel — all wired to gfxr-bridge. The upstream chat contract (`chat:addMessage`, `chat:addSuggestion`, `registerMessageHook`, etc.) is fully preserved for compatibility with other resources.
+Frontier-Noir-styled RP chat for RedM. A fork of the Cfx stock `chat` resource extended with proximity channels, RP commands, 3D floating text, persistent scene markers, per-player settings, a moderation suite, and an admin panel - all wired to gfxr-bridge. The upstream chat contract (`chat:addMessage`, `chat:addSuggestion`, `registerMessageHook`, etc.) is fully preserved for compatibility with other resources.
 
 ## Features
 
-- Five channels: IC, OOC, Job, Admin, Scene — each independently toggleable; tabs are per-player (non-admins never see Admin, jobless players never see Job)
+- Five channels: IC, OOC, Job, Admin, Scene - each independently toggleable; tabs are per-player (non-admins never see Admin, jobless players never see Job)
 - Proximity-based broadcast for all IC speech; server-wide option for OOC
 - RP commands: `/me`, `/do`, `/try`, `/whisper` (`/w`), `/shout` (`/s`), `/ooc`, `/scene`, `/jobchat`, `/achat`, `/dice`, `/coin`, `/announce`
-- 3D floating text above the sender's head for `/me`, `/do`, and `/try` — rides the SKEL\_Head bone, fades with distance and time; player-selectable style (plate / minimal / bubble / parchment / off)
+- 3D floating text above the sender's head for `/me`, `/do`, and `/try` - rides the SKEL\_Head bone, fades with distance and time; player-selectable style (plate / minimal / bubble / parchment / off)
 - Persistent world scene markers: `/scene` pins a 3D text at the writer's position; survives until the server restarts or a per-marker lifetime elapses
 - Typing bubble above a player's head while they compose a message
 - @mention autocomplete with sound notification; nearby-only mode available
@@ -17,7 +17,7 @@ Frontier-Noir-styled RP chat for RedM. A fork of the Cfx stock `chat` resource e
 - Draggable, independently scalable sections (chat panel + scene log) with snap-to-edge / snap-to-centre in edit mode; layout persisted via KVP
 - Theme editor with live preview; theme persisted via KVP
 - Admin panel: player list with mute (duration picker) and kick; report queue from `/report`; rolling in-memory history search by player or text
-- Moderation: word filter (censor or block mode), anti-flood sliding window with optional auto-mute, persistent mutes via SQL (`gfxr_chat_mutes` — auto-created)
+- Moderation: word filter (censor or block mode), anti-flood sliding window with optional auto-mute, persistent mutes via SQL (`gfxr_chat_mutes` - auto-created)
 - Admin commands: `/mute`, `/unmute`, `/kick`, `/clearchat`, `/clearscene`, `/announce`
 - Discord logging: admin-action webhook + optional full message log per channel
 - Ships en / de / pt-BR / fr / th / es / ro / tr; per-player language switchable in settings
@@ -32,7 +32,7 @@ The NUI is a **Vue application** built with webpack and shipped pre-built in `di
 npx webpack
 ```
 
-All player preferences (theme, layout, settings) are stored **client-side via KVP** — no database required for UI state. Only mutes use SQL.
+All player preferences (theme, layout, settings) are stored **client-side via KVP** - no database required for UI state. Only mutes use SQL.
 
 ## Dependencies
 
@@ -54,7 +54,7 @@ All player preferences (theme, layout, settings) are stored **client-side via KV
    npx webpack
    ```
 
-3. **SQL:** the `gfxr_chat_mutes` table is created automatically on first start — no manual import required.
+3. **SQL:** the `gfxr_chat_mutes` table is created automatically on first start - no manual import required.
 
 ## Configuration
 
@@ -75,9 +75,9 @@ All player preferences (theme, layout, settings) are stored **client-side via KV
 |----|-------|-------|-----------------|
 | `ic` | IC | all | true |
 | `ooc` | OOC | all | true |
-| `job` | Job | job | true — gated by `JOB_CHANNELS` / job check |
-| `admin` | Admin | admin | true — gated by admin check |
-| `scene` | Scene | all | true — read-only rolling RP log |
+| `job` | Job | job | true - gated by `JOB_CHANNELS` / job check |
+| `admin` | Admin | admin | true - gated by admin check |
+| `scene` | Scene | all | true - read-only rolling RP log |
 
 #### Proximity
 
@@ -140,8 +140,8 @@ A player is a chat-admin when any one of three checks passes:
 
 | Key | Default | Description |
 |-----|---------|-------------|
-| `Config.ADMIN_IDENTIFIERS` | *(example entry)* | Direct `license:`/`steam:`/`discord:` allowlist — simplest and framework-agnostic |
-| `Config.ADMIN_GROUPS` | `{"admin", "superadmin", "mod"}` | Framework group values. **Note:** on RSG the bridge maps group to job name, so this checks the job — prefer `ADMIN_IDENTIFIERS` or `ADMIN_ACE` on RSG servers |
+| `Config.ADMIN_IDENTIFIERS` | *(example entry)* | Direct `license:`/`steam:`/`discord:` allowlist - simplest and framework-agnostic |
+| `Config.ADMIN_GROUPS` | `{"admin", "superadmin", "mod"}` | Framework group values. **Note:** on RSG the bridge maps group to job name, so this checks the job - prefer `ADMIN_IDENTIFIERS` or `ADMIN_ACE` on RSG servers |
 | `Config.ADMIN_ACE` | `"gfxr.chat.admin"` | ACE permission string; set to `nil` to disable ACE checks |
 
 #### Discord Logging
@@ -155,7 +155,7 @@ A player is a chat-admin when any one of three checks passes:
 | `Config.MESSAGE_LOG.INCLUDE_ID` | `false` | Append the sender's identifier to each logged entry |
 | `Config.MESSAGE_LOG.CHANNELS` | *(see below)* | Per-type toggle; `whisper` and `admin` are `false` by default |
 
-**MESSAGE\_LOG channel defaults:** `say`, `me`, `do`, `try`, `shout`, `ooc`, `job`, `scene`, `announce` = `true`; `whisper` = `false` (whispers are usually private RP — enable knowingly); `admin` = `false` (staff-only). The admin **History** search also indexes whispers regardless of this Discord toggle.
+**MESSAGE\_LOG channel defaults:** `say`, `me`, `do`, `try`, `shout`, `ooc`, `job`, `scene`, `announce` = `true`; `whisper` = `false` (whispers are usually private RP - enable knowingly); `admin` = `false` (staff-only). The admin **History** search also indexes whispers regardless of this Discord toggle.
 
 ---
 
@@ -272,9 +272,9 @@ These are the factory defaults loaded when no KVP data is saved. Players can cha
 
 Chat-admins see an admin icon in the chat toolbar (or can open the panel with `/chatadmin`). The panel has three tabs:
 
-- **Players** — searchable online player list; per-player mute (with duration picker) and kick buttons; muted badge
-- **Reports** — list of open `/report` submissions with player name, text, timestamp, and a Resolve button
-- **History** — search up to 500 recent in-memory messages by player name or text (newest first)
+- **Players** - searchable online player list; per-player mute (with duration picker) and kick buttons; muted badge
+- **Reports** - list of open `/report` submissions with player name, text, timestamp, and a Resolve button
+- **History** - search up to 500 recent in-memory messages by player name or text (newest first)
 
 ## Database
 
@@ -284,7 +284,7 @@ One table is used, auto-created on first start:
 |-------|---------|
 | `gfxr_chat_mutes` | Persistent player mutes (`identifier`, `muted_by`, `reason`, `created_at`, `expires_at`) |
 
-Mutes are hydrated into memory at resource start; expired rows are pruned automatically. No other SQL is used — theme, layout, and settings live in client-side KVP.
+Mutes are hydrated into memory at resource start; expired rows are pruned automatically. No other SQL is used - theme, layout, and settings live in client-side KVP.
 
 ## Net Events
 

@@ -32,4 +32,4 @@ Every script communicates with your framework through `gfx-bridge`, ensuring com
 
 - Discord: [GFX Development](https://discord.gg/gfx)
 - Documentation: This GitBook
-- Tebex Store: [gfx.tebex.io](https://gfx.tebex.io)
+- Store: [gfxscripts.com/redm](https://gfxscripts.com/redm)

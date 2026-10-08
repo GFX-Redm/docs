@@ -1,21 +1,21 @@
 # RedM Player HUD · gfxr-hud
 
-Framework-agnostic RedM HUD with player vitals, metabolism, contextual horse widget, money, player info, clock/weather, voice indicator, minimap controller, and a fully in-game NUI settings menu. Settings are persisted entirely in the browser's localStorage — no database required.
+Framework-agnostic RedM HUD with player vitals, metabolism, contextual horse widget, money, player info, clock/weather, voice indicator, minimap controller, and a fully in-game NUI settings menu. Settings are persisted entirely in the browser's localStorage - no database required.
 
 ## Features
 
-- Player vitals: health, stamina, and Dead Eye — each shows a core value and a bar (e.g. Dead Eye bar vs. Dead Eye core)
+- Player vitals: health, stamina, and Dead Eye - each shows a core value and a bar (e.g. Dead Eye bar vs. Dead Eye core)
 - Needs: hunger, thirst, and stress (0–100); master toggle for servers without a metabolism resource
-- Contextual horse widget: health, stamina, and cleanliness — auto-shows on mount, auto-hides on dismount
+- Contextual horse widget: health, stamina, and cleanliness - auto-shows on mount, auto-hides on dismount
 - Money widget: cash, gold, and bank (bank is 0 on VORP which has no core bank)
 - Player info widget: identifier, character name, and current job
 - Clock and weather widget: in-game time and a weather icon mapped from the settled weather hash
 - Voice indicator: detects pma-voice, yaca, saltychat, or mumble by priority; shows range (whisper/normal/shout) and talking state
 - Minimap controller: circle, square, or off shape; zoom level; fog-of-war toggle
-- In-game NUI settings menu opened via F7 (raw key, polled directly on RedM) or the `hudmenu` console command — supports drag-to-reposition, scale slider, enable/disable per element, theme picker with live preview, and minimap shape selector
+- In-game NUI settings menu opened via F7 (raw key, polled directly on RedM) or the `hudmenu` console command - supports drag-to-reposition, scale slider, enable/disable per element, theme picker with live preview, and minimap shape selector
 - Three UI themes: Authentic (Western ornate), Minimal (clean), Ornate (detailed)
-- Settings persisted in the NUI's CEF localStorage — survive game restarts, no SQL required
-- Event-driven money and needs updates via the bridge `OnMoneyChange` / `OnNeedsChange` — no server polling for either (see Performance below)
+- Settings persisted in the NUI's CEF localStorage - survive game restarts, no SQL required
+- Event-driven money and needs updates via the bridge `OnMoneyChange` / `OnNeedsChange` - no server polling for either (see Performance below)
 - Delta-only NUI pushes: only changed values are sent to the React layer, keeping idle resmon near zero
 
 ## Architecture
@@ -55,8 +55,8 @@ No SQL import step is required.
 |-----|---------|-------------|
 | `Config.MENU_COMMAND` | `"hudmenu"` | Console command that opens the settings menu; also usable as a bindable command |
 | `Config.MENU_KEYBIND` | `"F7"` | Default key passed to `RegisterKeyMapping` (FiveM key-binding UI only; ignored on RedM) |
-| `Config.MENU_KEY` | `0x76` | **RedM — raw Windows virtual-key code polled via `IsRawKeyJustPressed`.** This is the key that actually opens the menu on rdr3. Default `0x76` = F7. Common codes: F1=0x70, F2=0x71 … F7=0x76 … F12=0x7B; digits 0–9 = 0x30–0x39; A–Z = 0x41–0x5A. Set to `false` to disable raw-key polling entirely. |
-| `Config.MENU_CONTROL` | `false` | Optional game-control-hash fallback, checked only when raw-key polling is unavailable. Disabled by default. The old default (0xE8342FF2 = INPUT\_MULTIPLAYER\_INFO / Left Alt) clashed with targeting — that was a bug, now corrected. |
+| `Config.MENU_KEY` | `0x76` | **RedM - raw Windows virtual-key code polled via `IsRawKeyJustPressed`.** This is the key that actually opens the menu on rdr3. Default `0x76` = F7. Common codes: F1=0x70, F2=0x71 … F7=0x76 … F12=0x7B; digits 0–9 = 0x30–0x39; A–Z = 0x41–0x5A. Set to `false` to disable raw-key polling entirely. |
+| `Config.MENU_CONTROL` | `false` | Optional game-control-hash fallback, checked only when raw-key polling is unavailable. Disabled by default. The old default (0xE8342FF2 = INPUT\_MULTIPLAYER\_INFO / Left Alt) clashed with targeting - that was a bug, now corrected. |
 | `Config.UPDATE_INTERVAL` | `1000` | Milliseconds between local-native sampling loops (cores, horse, clock, weather) |
 | `Config.FAST_UPDATE_INTERVAL` | `250` | Milliseconds between voice indicator samples |
 | `Config.DELTA_EPSILON` | `1` | Minimum integer-percent change before a vital or need value is re-pushed to the NUI |
@@ -134,10 +134,10 @@ Settings are saved entirely inside the NUI's CEF localStorage under the key `gfx
 
 Money and needs are **event-driven**, never polled from the server by the HUD itself:
 
-- `OnMoneyChange` — RSG fires its native `RSGCore:Client:OnMoneyChange` event; VORP/RedEM diff the local character object on a low-rate client loop. Zero server calls.
-- `OnNeedsChange` — RSG reads client metadata on `RSGCore:Player:SetPlayerData`; VORP listens to `vorp_metabolism` client events with a 2 s fallback loop (all client-local). RedEM is the sole exception: the bridge does a 3 s server poll internally because RedEM exposes no client needs signal.
+- `OnMoneyChange` - RSG fires its native `RSGCore:Client:OnMoneyChange` event; VORP/RedEM diff the local character object on a low-rate client loop. Zero server calls.
+- `OnNeedsChange` - RSG reads client metadata on `RSGCore:Player:SetPlayerData`; VORP listens to `vorp_metabolism` client events with a 2 s fallback loop (all client-local). RedEM is the sole exception: the bridge does a 3 s server poll internally because RedEM exposes no client needs signal.
 
-Only local natives (player cores, horse entity, clock, weather hash) are polled by the HUD's own `UPDATE_INTERVAL` loop. The NUI React layer never polls — it only updates when the Lua side pushes a delta.
+Only local natives (player cores, horse entity, clock, weather hash) are polled by the HUD's own `UPDATE_INTERVAL` loop. The NUI React layer never polls - it only updates when the Lua side pushes a delta.
 
 ## Client Exports
 
@@ -165,7 +165,7 @@ local visible = exports['gfxr-hud']:IsHudVisible()
 
 ### SetMinimapShape
 
-Change the minimap shape immediately (applies the radar native; does not persist — use the settings menu to persist to localStorage).
+Change the minimap shape immediately (applies the radar native; does not persist - use the settings menu to persist to localStorage).
 
 ```lua
 exports['gfxr-hud']:SetMinimapShape(shape)

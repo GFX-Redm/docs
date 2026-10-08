@@ -36,7 +36,7 @@ local data = exports['gfxr-bridge']:GetPlayerData()
 | jobGrade | number | Job grade level |
 | money | number | Cash amount |
 | gold | number | Gold amount |
-| bank | number | Bank balance (RSG/RedEM; VORP has no core bank — returns `nil`) |
+| bank | number | Bank balance (RSG/RedEM; VORP has no core bank - returns `nil`) |
 | rol | number | ROL currency (VORP only; `nil` on other frameworks) |
 | group | string | Admin group |
 
@@ -54,7 +54,7 @@ Fires on: VORP `vorp:SelectedCharacter`, RSG `RSGCore:Client:OnPlayerLoaded`, Re
 
 ## OnMoneyChange
 
-Register a callback that fires whenever the local player's money changes — event-driven, so feature scripts never poll for money.
+Register a callback that fires whenever the local player's money changes - event-driven, so feature scripts never poll for money.
 
 ```lua
 exports['gfxr-bridge']:OnMoneyChange(function(money)
@@ -62,11 +62,11 @@ exports['gfxr-bridge']:OnMoneyChange(function(money)
 end)
 ```
 
-The callback also fires once immediately with the current snapshot, so you get an initial value on register. Internally: **RSG** uses its native `RSGCore:Client:OnMoneyChange` event; **VORP/RedEM** have no such event, so the bridge diffs the local (client-cached) character object on a low-rate loop — never a server round-trip. `bank` is `0` where the framework has no bank (VORP).
+The callback also fires once immediately with the current snapshot, so you get an initial value on register. Internally: **RSG** uses its native `RSGCore:Client:OnMoneyChange` event; **VORP/RedEM** have no such event, so the bridge diffs the local (client-cached) character object on a low-rate loop - never a server round-trip. `bank` is `0` where the framework has no bank (VORP).
 
 ## OnNeedsChange
 
-Register a callback that fires whenever the local player's needs change — event-driven, so HUD/metabolism scripts never poll the server for needs.
+Register a callback that fires whenever the local player's needs change - event-driven, so HUD/metabolism scripts never poll the server for needs.
 
 ```lua
 exports['gfxr-bridge']:OnNeedsChange(function(needs)
@@ -75,9 +75,9 @@ end)
 ```
 
 Fires once immediately with an initial snapshot where available. Internally (all verified against framework source):
-- **RSG** — reads hunger/thirst/stress from local `metadata`; updates on `RSGCore:Player:SetPlayerData` (which re-fires on every metadata change — `RSGCore:Client:OnPlayerMetadata` does **not** exist). No server call.
-- **VORP** — `vorp_metabolism` drains client-side silently with no per-tick event, so the bridge reads the current `Hunger`/`Thirst` (0–1000 → /10) via the local `vorpmetabolism:getValue` event on a low-rate (2s) **client-local** loop (no server round-trip), plus instant refresh on `setValue`/`changeValue`/`useItem`. No stress → `0`.
-- **RedEM:RP** — exposes no client needs signal, so the bridge does a low-rate (3s) **server** poll internally. The only framework that hits the server for needs.
+- **RSG** - reads hunger/thirst/stress from local `metadata`; updates on `RSGCore:Player:SetPlayerData` (which re-fires on every metadata change - `RSGCore:Client:OnPlayerMetadata` does **not** exist). No server call.
+- **VORP** - `vorp_metabolism` drains client-side silently with no per-tick event, so the bridge reads the current `Hunger`/`Thirst` (0–1000 → /10) via the local `vorpmetabolism:getValue` event on a low-rate (2s) **client-local** loop (no server round-trip), plus instant refresh on `setValue`/`changeValue`/`useItem`. No stress → `0`.
+- **RedEM:RP** - exposes no client needs signal, so the bridge does a low-rate (3s) **server** poll internally. The only framework that hits the server for needs.
 
 ## TriggerCallback
 
